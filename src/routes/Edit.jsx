@@ -499,14 +499,6 @@ Gota, Ahmedabad, 382470`,
               PREVIEW
             </Button>
           </Link>
-
-          {/* <Button
-                variant="outlined"
-                sx={{ mx: "20px", mt: "20px", px: "96px", py: "5px" }}
-            >
-                EDIT
-            </Button> */}
-
           <Button
             onClick={downloadPDF}
             variant="outlined"

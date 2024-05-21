@@ -70,7 +70,6 @@ Gota, Ahmedabad, 382470`,
     doc.rect(10, 110, 190, 15, "F");
     doc.setTextColor("#000000");
     doc.text("SERVICE DESCRIPTION", 20, 120);
-    // doc.text("Description", 75, 105);
     doc.text("TOTAL", 155, 120);
 
     doc.setFillColor(241,251,255);

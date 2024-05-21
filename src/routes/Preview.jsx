@@ -10,11 +10,7 @@ const Preview = ({ invoices, mainItems }) => {
   const previewData = invoices.find((item) => item.billno === billno);
   console.log("invoices", invoices);
 
-  // const downloadPDF = () => {
-  //   const doc = new jsPDF();
-  //   doc.save(`invoice_${previewData.billno}.pdf`);
-  // };
-
+ 
   const downloadPDF = () => {
     const doc = new jsPDF();
     doc.setFontSize(12);

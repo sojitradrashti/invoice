@@ -16,21 +16,13 @@ const Array = [
     name: "Add",
     icon: <AddIcon />,
   },
-  // {
-  //   path: "edit",
-  //   name: "Edit",
-  //   icon: <EditIcon />,
-  // },
+  
   {
     path: "list",
     name: "List",
     icon: <ListIcon />,
   },
-  // {
-  //   path: "preview",
-  //   name: "Preview",
-  //   icon: <PreviewIcon />,
-  // },
+  
 ];
 const Navbar = () => {
   const location = useLocation();
@@ -51,15 +43,7 @@ const Navbar = () => {
       }}
     >
       <img src="/assets/logo.png" alt="logo" style={{ width: "13vw" }} />
-      {/* <Typography
-        color={"black"}
-        fontSize={25}
-        fontWeight={600}
-        textAlign={"center"}
-        pb={2}
-      >
-        Demaze Technologies
-      </Typography> */}
+      
       {Array.map((item) => (
         <Box
           key={item.path}
@@ -152,18 +136,7 @@ const App = () => {
 
 
    const pdfRef = useRef();
-  // const downloadPDF = () => {
-  //   const input = pdfRef.current;
-  //   html2canvas(input).then((canvas) => {
-  //     const imgData = canvas.toDataURL("image/png");
-  //     const pdf = new jsPDF("p", "mm", "a4");
-  //     const imgProps = pdf.getImageProperties(imgData);
-  //     const pdfWidth = pdf.internal.pageSize.getWidth();
-  //     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-  //     pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-  //     pdf.save(`invoice_${previewData.billno}.pdf`);
-  //   });
-  // };
+  
 
   return (
     <Box display={"flex"} height={"100%"} width={"100vw"} bgcolor={"#F4F5FA"}>
@@ -184,7 +157,6 @@ const App = () => {
                 handleInputChange={handleInputChange}
                 setFormData={setFormData}
                 formData={formData}
-                // downloadPDF={downloadPDF}
               />
             }
           />
@@ -202,7 +174,6 @@ const App = () => {
                 gst={gst}
                 EditgrandTotal={EditgrandTotal}
                 calculateGrandTotal={calculateGrandTotal}
-                // downloadPDF={downloadPDF}
               />
             }
           />
@@ -213,7 +184,6 @@ const App = () => {
                 invoices={invoices}
                 mainItems={mainItem}
                 calculateGrandTotal={calculateGrandTotal}
-                // downloadPDF={downloadPDF}
               />
             }
           />
