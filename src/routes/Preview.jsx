@@ -4,7 +4,8 @@ import { Link, useParams } from "react-router-dom";
 import dayjs from "dayjs";
 import jsPDF from "jspdf";
 
-const Preview = ({ invoices }) => {
+const Preview = ({ invoices, mainItems }) => {
+  console.log(invoices);
   let { billno } = useParams();
   const previewData = invoices.find((item) => item.billno === billno);
   console.log("invoices", invoices);
@@ -17,7 +18,7 @@ const Preview = ({ invoices }) => {
   const downloadPDF = () => {
     const doc = new jsPDF();
     doc.setFontSize(12);
-    doc.setTextColor(0,0,0);
+    doc.setTextColor(0, 0, 0);
     const logoImg = new Image();
     logoImg.src = "/assets/logo.png";
     doc.addImage(logoImg, "PNG", 10, 10, 50, 15);
@@ -40,13 +41,12 @@ Gota, Ahmedabad, 382470`,
     doc.rect(10, 110, 190, 15, "F");
     doc.setTextColor("#000000");
     doc.text("SERVICE DESCRIPTION", 20, 120);
-    // doc.text("Description", 75, 105);
     doc.text("TOTAL", 155, 120);
 
-    doc.setFillColor(241,251,255);
-    doc.rect(10,130,190,80,"F");
+    doc.setFillColor(241, 251, 255);
+    doc.rect(10, 130, 190, 80, "F");
     let currentYPosition = 140;
-    previewData.items.forEach((item) => {
+    mainItems.forEach((item) => {
       doc.text(`${item.selectedItem}`, 20, currentYPosition);
       doc.text(`${item.price}`, 170, currentYPosition);
       doc.text(`ORIGINAL PRICE`, 90, currentYPosition);
@@ -54,10 +54,13 @@ Gota, Ahmedabad, 382470`,
     });
     doc.text(`Total Price: ${previewData.totalPrice}`, 150, currentYPosition);
     doc.text(`GST: ${previewData.totalGST}`, 150, currentYPosition + 10);
-    // doc.text(`Discounted Price: ${previewData.totalDiscountPrice}`, 150, currentYPosition + 20);
-    doc.text(`Grand Total: ${previewData.grandTotal}`, 150, currentYPosition + 20);
+    doc.text(
+      `Grand Total: ${previewData.grandTotal}`,
+      150,
+      currentYPosition + 20
+    );
 
-    doc.text(`Phone: ${previewData.phoneno}`, 10, 210);
+    doc.text(` ${previewData.phoneno}`, 10, 210);
     doc.text("info@demaze.in", 100, 210);
     doc.text("demaze.in", 180, 210);
 
@@ -118,7 +121,7 @@ Gota, Ahmedabad, 382470`,
           <Typography>Price</Typography>
         </Box>
         <Box>
-          {previewData.items.map((item, index) => (
+          {mainItems.map((item, index) => (
             <Box
               key={index}
               sx={{

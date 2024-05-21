@@ -23,10 +23,11 @@ import { MobileDatePicker } from "@mui/x-date-pickers";
 const Add = ({
   invoices,
   setInvoices,
+  mainItems,
+  setMainitem,
   handleInputChange,
   formData,
   setFormData,
-  download,
 }) => {
   const [selectedItemsTitle, setSelectedItemsTitle] = useState("");
   const [prices, setPrices] = useState([]);
@@ -54,6 +55,7 @@ const Add = ({
       description: "",
     };
     setItems([...items, newItem]);
+    console.log(items)
   };
 
   const handleItemSelect = (event, index) => {
@@ -140,7 +142,7 @@ const Add = ({
     });
     return totalGST.toFixed(2);
   };
-
+ 
   const calculateGrandTotal = () => {
     const totalGST = parseFloat(calculateTotalGST());
     const totalDiscount = parseFloat(calculateTotalDiscount());
@@ -163,49 +165,59 @@ const Add = ({
 
   const handleSaveInvoice = () => {
     setInvoices([...invoices, formData]);
+    setMainitem(items);
   };
 
   console.log("formdata", formData);
 
   const downloadPDF = () => {
     const doc = new jsPDF();
+    doc.setFontSize(12);
+    doc.setTextColor(0,0,0);
+    const logoImg = new Image();
+    logoImg.src = "/assets/logo.png";
+    doc.addImage(logoImg, "PNG", 10, 10, 50, 15);
 
-    doc.text("Invoice", 20, 10);
-    doc.text(`Date: ${dayjs(formData.date).format("DD-MM-YYYY")}`, 20, 20);
-    doc.text(`Bill No: ${formData.billno}`, 20, 30);
-    doc.text(`Invoice to: ${formData.invoice}`, 20, 40);
-    doc.text(`Address: ${formData.address}`, 20, 50);
+    doc.text(
+      `D-814, Ganesh Glory 11,
+Jagatpur Road, SG Highway, 
+Gota, Ahmedabad, 382470`,
+      10,
+      40
+    );
+    doc.text(`Date: ${dayjs(formData.date).format("DD-MM-YYYY")}`, 150, 70);
+    doc.text(`Bill No: ${formData.billno}`, 150, 80);
+    doc.text(`HSN No: 99831`, 150, 90);
 
-    doc.text("Items:", 20, 60);
-    formData.items.forEach((item, index) => {
-      doc.text(
-        `${item.selectedItem}: ${item.description} - ${item.price}`,
-        20,
-        70 + index * 10
-      );
+    doc.text(`Invoice to: ${formData.invoice}`, 10, 70);
+    doc.text(`Address: ${formData.address}`, 10, 80);
+
+    doc.setFillColor("#A0DEFF");
+    doc.rect(10, 110, 190, 15, "F");
+    doc.setTextColor("#000000");
+    doc.text("SERVICE DESCRIPTION", 20, 120);
+    // doc.text("Description", 75, 105);
+    doc.text("TOTAL", 155, 120);
+
+    doc.setFillColor(241,251,255);
+    doc.rect(10,130,190,80,"F");
+    let currentYPosition = 140;
+  formData.items.forEach((item) => {
+      doc.text(`${item.selectedItem}`, 20, currentYPosition);
+      doc.text(`${item.price}`, 170, currentYPosition);
+      doc.text(`ORIGINAL PRICE`, 90, currentYPosition);
+      currentYPosition += 10;
     });
+    doc.text(`Total Price: ${formData.totalPrice}`, 150, currentYPosition);
+    doc.text(`GST: ${formData.totalGST}`, 150, currentYPosition + 10);
+    // doc.text(`Discounted Price: ${previewData.totalDiscountPrice}`, 150, currentYPosition + 20);
+    doc.text(`Grand Total: ${formData.grandTotal}`, 150, currentYPosition + 20);
 
-    const itemsLength = formData.items.length;
-    doc.text(
-      `Total Price: ${formData.totalPrice}`,
-      20,
-      70 + itemsLength * 10 + 10
-    );
-    doc.text(`GST: ${formData.totalGST}`, 20, 80 + itemsLength * 10 + 10);
-    doc.text(
-      `Discounted Price: ${formData.totalDiscountPrice}`,
-      20,
-      90 + itemsLength * 10 + 10
-    );
-    doc.text(
-      `Grand Total: ${formData.grandTotal}`,
-      20,
-      100 + itemsLength * 10 + 10
-    );
 
-    doc.text(`Phone: ${formData.phoneno}`, 20, 110 + itemsLength * 10 + 10);
-    doc.text("info@demaze.in", 20, 120 + itemsLength * 10 + 10);
-    doc.text("demaze.in", 20, 130 + itemsLength * 10 + 10);
+
+    doc.text(`${formData.phoneno}`, 10, 220);
+    doc.text("info@demaze.in", 100, 220);
+    doc.text("demaze.in", 180, 220);
 
     doc.save(`invoice_${formData.billno}.pdf`);
   };
@@ -245,10 +257,9 @@ const Add = ({
                 alignItems: "center",
               }}
             >
-              {/* <Typography> Invoice to: </Typography> */}
+              <Typography> Invoice to: </Typography>
               <TextField
                 placeholder="Company Name"
-                label=" Invoice to"
                 variant="outlined"
                 size="small"
                 autoComplete="off"
@@ -266,11 +277,10 @@ const Add = ({
                 mt: "10px",
               }}
             >
-              {/* <Typography>Address: </Typography> */}
+              <Typography>Address: </Typography>
               <TextField
-                label=" Address"
                 multiline
-                rows={2}
+                rows={1}
                 size="small"
                 placeholder="Address"
                 variant="outlined"
@@ -283,7 +293,7 @@ const Add = ({
           </Box>
           <Box
             sx={{
-              mt: "39px",
+              mt: "39px" ,
             }}
           >
             <Box
@@ -293,14 +303,14 @@ const Add = ({
                 alignItems: "center",
               }}
             >
-              {/* <Typography>Date: </Typography> */}
+              <Typography>Date: </Typography>
+             
               <LocalizationProvider
                 value={formData.date}
                 dateAdapter={AdapterDayjs}
                 label="Date"
               >
                 <MobileDatePicker
-                  label="Date"
                   onChange={(e) => {
                     if (e && e.$d) {
                       handleInputChange({
@@ -328,11 +338,10 @@ const Add = ({
                 mt: "5px",
               }}
             >
-              {/* <Typography>Bill No: </Typography> */}
+              <Typography>Bill No: </Typography>
 
               <TextField
                 placeholder="#5037"
-                label=" Bill No"
                 variant="outlined"
                 value={formData.billno}
                 onChange={handleInputChange}
@@ -383,11 +392,11 @@ const Add = ({
                   }}
                 >
                   <FormControl sx={{ width: "300px" }}>
-                    <InputLabel>Select Item</InputLabel>
+                    <InputLabel id={`item-label-${index}`}>Select Item</InputLabel>
                     <Select
                       value={item.selectedItem}
                       onChange={(e) => handleItemSelect(e, index)}
-                      label="select item"
+                      label={`select item`}
                       size="small"
                     >
                       <MenuItem value="Web design">Web design</MenuItem>

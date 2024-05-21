@@ -15,13 +15,13 @@ import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
 import { Link, useParams } from "react-router-dom";
 import dayjs from "dayjs";
+import jsPDF from "jspdf";
 
 const Edit = ({
-  downloadPDF,
+  mainItems,
   invoices,
   setEditData,
   editData,
-  handleInputChange,
   calculateGrandTotal,
   EditTotalPrice,
   gst,
@@ -76,14 +76,61 @@ const Edit = ({
     const updatedGrandTotal = calculateGrandTotal(editData.items);
     const updatedEditData = {
       ...editData,
-      grandTotal:updatedGrandTotal,
-    }
+      grandTotal: updatedGrandTotal,
+    };
     const updatedInvoices = invoices.map((invoice) =>
       invoice.billno === editData.billno ? updatedEditData : invoice
     );
     setInvoices(updatedInvoices);
   };
-  
+  const downloadPDF = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    const logoImg = new Image();
+    logoImg.src = "/assets/logo.png";
+    doc.addImage(logoImg, "PNG", 10, 10, 50, 15);
+
+    doc.text(
+      `D-814, Ganesh Glory 11,
+Jagatpur Road, SG Highway, 
+Gota, Ahmedabad, 382470`,
+      10,
+      40
+    );
+    doc.text(`Date: ${dayjs(editData.date).format("DD-MM-YYYY")}`, 150, 70);
+    doc.text(`Bill No: ${editData.billno}`, 150, 80);
+    doc.text(`HSN No: 99831`, 150, 90);
+
+    doc.text(`Invoice to: ${editData.invoice}`, 10, 70);
+    doc.text(`Address: ${editData.address}`, 10, 80);
+
+    doc.setFillColor("#A0DEFF");
+    doc.rect(10, 110, 190, 15, "F");
+    doc.setTextColor("#000000");
+    doc.text("SERVICE DESCRIPTION", 20, 120);
+    doc.text("TOTAL", 155, 120);
+
+    doc.setFillColor(241, 251, 255);
+    doc.rect(10, 130, 190, 80, "F");
+    let currentYPosition = 140;
+    editData.items.forEach((item) => {
+      doc.text(`${item.selectedItem}`, 20, currentYPosition);
+      doc.text(`${item.price}`, 170, currentYPosition);
+      doc.text(`ORIGINAL PRICE`, 90, currentYPosition);
+      currentYPosition += 10;
+    });
+    doc.text(`Total Price: ${editData.totalPrice}`, 150, currentYPosition);
+    doc.text(`GST: ${editData.totalGST}`, 150, currentYPosition + 10);
+    doc.text(`Grand Total: ${editData.grandTotal}`, 150, currentYPosition + 20);
+
+    doc.text(` ${editData.phoneno}`, 10, 220);
+    doc.text("info@demaze.in", 100, 220);
+    doc.text("demaze.in", 180, 220);
+
+    doc.save(`invoice_${editData.billno}.pdf`);
+  };
+
   return (
     <Box sx={{ display: "flex" }}>
       <Box
@@ -192,8 +239,7 @@ const Edit = ({
           </Box>
         </Box>
         <Divider sx={{ mt: "20px" }} />
-        <Box
-        >
+        <Box>
           {editData.items?.map((item, index) => (
             <Box
               key={index}
@@ -317,9 +363,11 @@ const Edit = ({
         <Box sx={{ mt: "90px", mb: "50px" }}>
           <Box
             sx={{
-              p: "20px", m:"10px",
+              p: "20px",
+              m: "10px",
               fontWeight: "bold",
-              display: "flex", bgcolor: "#A0DEFF",
+              display: "flex",
+              bgcolor: "#A0DEFF",
               justifyContent: "space-between",
             }}
           >
@@ -332,7 +380,7 @@ const Edit = ({
               sx={{
                 bgcolor: "#E1F7F5",
                 p: "30px",
-               
+
                 width: "89%",
                 m: "10px",
               }}
@@ -425,21 +473,13 @@ const Edit = ({
         sx={{
           mt: "50px",
           mx: "8px",
-          height: "21vh",
+          height: "30vh",
           boxShadow: "0px 3px 5px rgba(0, 0, 0, 0.2)",
           borderRadius: "10px",
           bgcolor: "white",
         }}
       >
         <Box sx={{ width: "19vw" }}>
-          <Link to={`/preview/${editData.billno}`} style={{ textDecoration: "none" }}>
-            <Button onClick={handleSave}
-              variant="outlined"
-              sx={{ mx: "20px", mt: "20px", px: "80px", py: "5px" }}
-            >
-              PREVIEW
-            </Button>
-          </Link>
           <Button
             onClick={handleSave}
             variant="contained"
@@ -447,6 +487,18 @@ const Edit = ({
           >
             SAVE
           </Button>
+          <Link
+            to={`/preview/${editData.billno}`}
+            style={{ textDecoration: "none" }}
+          >
+            <Button
+              onClick={handleSave}
+              variant="outlined"
+              sx={{ mx: "20px", mt: "20px", px: "80px", py: "5px" }}
+            >
+              PREVIEW
+            </Button>
+          </Link>
 
           {/* <Button
                 variant="outlined"
@@ -455,7 +507,8 @@ const Edit = ({
                 EDIT
             </Button> */}
 
-          <Button onClick={downloadPDF}
+          <Button
+            onClick={downloadPDF}
             variant="outlined"
             sx={{ mx: "20px", mt: "20px", px: "70px", py: "5px" }}
           >

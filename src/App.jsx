@@ -8,8 +8,7 @@ import Preview from "./routes/Preview";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import ListIcon from "@mui/icons-material/List";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
+
 
 const Array = [
   {
@@ -93,6 +92,7 @@ const Navbar = () => {
 
 const App = () => {
   const [invoices, setInvoices] = useState([]);
+  const [mainItem, setMainitem] = useState([]);
   const [editData, setEditData] = useState({ items: [] });
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -180,6 +180,7 @@ const App = () => {
               <Add
                 invoices={invoices}
                 setInvoices={setInvoices}
+                setMainitem={setMainitem}
                 handleInputChange={handleInputChange}
                 setFormData={setFormData}
                 formData={formData}
@@ -210,6 +211,7 @@ const App = () => {
             element={
               <Preview
                 invoices={invoices}
+                mainItems={mainItem}
                 calculateGrandTotal={calculateGrandTotal}
                 // downloadPDF={downloadPDF}
               />
